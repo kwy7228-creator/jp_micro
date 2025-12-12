@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>일본어 마이크로러닝 (JLPT N1 · 5일)</title>
+  <title>일본어 마이크로러닝 (JPT 700점 · 5일)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; }
@@ -27,8 +27,42 @@
     .subtitle {
       font-size: 0.85rem;
       color: #9ca3af;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
+
+    .day-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+    .day-label {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      letter-spacing: .06em;
+    }
+    .day-buttons {
+      display: flex;
+      gap: 4px;
+    }
+    .day-btn {
+      width: 32px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid #334155;
+      background: #020617;
+      color: #9ca3af;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .day-btn.active {
+      background: #38bdf8;
+      color: #020617;
+      border-color: #38bdf8;
+      font-weight: 600;
+    }
+
     .tabs {
       display: flex;
       gap: 4px;
@@ -132,7 +166,7 @@
       cursor: pointer;
       font-size: 0.9rem;
       background: #020617;
-      color: #e5e7eb; /* 보기 글자색 */
+      color: #e5e7eb;
       text-align: left;
     }
     .quiz-option.correct {
@@ -190,8 +224,19 @@
 </head>
 <body>
 <div class="app">
-  <h1>일본어 마이크로러닝 (JLPT N1 · 5일)</h1>
-  <div class="subtitle">하루 20단어 · 단어 → 문장 퀴즈(빈칸) → 오디오 복습 → 장문 읽기</div>
+  <h1>일본어 마이크로러닝 (JPT 700점 · 5일)</h1>
+  <div class="subtitle">DAY 선택 → 단어 20개 → 문장 빈칸 퀴즈 → 오디오 복습 → 장문 읽기</div>
+
+  <div class="day-controls">
+    <div class="day-label">오늘 학습 DAY</div>
+    <div class="day-buttons" id="day-buttons">
+      <button class="day-btn" data-day="0">1</button>
+      <button class="day-btn" data-day="1">2</button>
+      <button class="day-btn" data-day="2">3</button>
+      <button class="day-btn" data-day="3">4</button>
+      <button class="day-btn" data-day="4">5</button>
+    </div>
+  </div>
 
   <div class="tabs">
     <button class="tab active" data-tab="words">단어 연습</button>
@@ -270,188 +315,183 @@
         <button class="btn full" id="btn-reading-audio">장문 전체 듣기</button>
       </div>
     </div>
-    <div class="hint">※ JLPT N1 스타일의 장문을 천천히 읽으면서 오늘 단어들이 어떻게 쓰이는지 확인해 보세요.</div>
+    <div class="hint">※ JPT 700점 수준의 장문을 천천히 읽으면서 오늘 단어들이 어떻게 쓰이는지 확인해 보세요.</div>
   </section>
 </div>
 
 <script>
   // -------------------------------
-  // 1. 5일치 JLPT N1 단어 (각 20개)
+  // 1. 5일치 JPT 700점 수준 단어 (각 20개)
   // -------------------------------
+  // 난이도: 일상 + 비즈니스 중급, 시험에서 자주 나오는 표현 위주
   const WEEK_WORDS = [
-    // Day 1
+    // Day 1 – 회사 생활 기본
     [
-      {jp:"把握",reading:"はあく",meaning:"파악하다",sentenceJp:"状況を正確に把握する。",sentenceKr:"상황을 정확하게 파악하다."},
-      {jp:"赴く",reading:"おもむく",meaning:"향하다",sentenceJp:"彼は新しい職場へ赴いた。",sentenceKr:"그는 새로운 직장으로 향했다."},
-      {jp:"促す",reading:"うながす",meaning:"촉구하다",sentenceJp:"注意を促すアナウンスが流れた。",sentenceKr:"주의를 촉구하는 안내 방송이 흘러나왔다."},
-      {jp:"精巧",reading:"せいこう",meaning:"정교하다",sentenceJp:"精巧な時計を修理する。",sentenceKr:"정교한 시계를 수리하다."},
-      {jp:"希薄",reading:"きはく",meaning:"희박하다",sentenceJp:"責任感が希薄だと言われた。",sentenceKr:"책임감이 희박하다는 말을 들었다."},
-      {jp:"顕著",reading:"けんちょ",meaning:"현저하다",sentenceJp:"売り上げに顕著な変化が見られる。",sentenceKr:"매출에서 현저한 변화가 보인다."},
-      {jp:"緩和",reading:"かんわ",meaning:"완화하다",sentenceJp:"渋滞を緩和する対策が必要だ。",sentenceKr:"정체를 완화할 대책이 필요하다."},
-      {jp:"拒む",reading:"こばむ",meaning:"거부하다",sentenceJp:"彼はその要求をきっぱり拒んだ。",sentenceKr:"그는 그 요구를 딱 잘라 거부했다."},
-      {jp:"阻む",reading:"はばむ",meaning:"막다",sentenceJp:"悪天候が計画の実行を阻んだ。",sentenceKr:"악천후가 계획 실행을 막았다."},
-      {jp:"顧みる",reading:"かえりみる",meaning:"돌아보다, 반성하다",sentenceJp:"自分の行動を顧みる時間を持つ。",sentenceKr:"자신의 행동을 돌아보는 시간을 갖다."},
-      {jp:"頻繁",reading:"ひんぱん",meaning:"빈번하다",sentenceJp:"最近、地震が頻繁に起きている。",sentenceKr:"최근 지진이 빈번하게 일어나고 있다."},
-      {jp:"画期的",reading:"かっきてき",meaning:"획기적이다",sentenceJp:"画期的な技術が開発された。",sentenceKr:"획기적인 기술이 개발되었다."},
-      {jp:"如実",reading:"にょじつ",meaning:"여실히",sentenceJp:"数字が結果を如実に示している。",sentenceKr:"숫자가 결과를 여실히 보여주고 있다."},
-      {jp:"精密",reading:"せいみつ",meaning:"정밀하다",sentenceJp:"精密検査を受けることになった。",sentenceKr:"정밀 검사를 받게 되었다."},
-      {jp:"堅実",reading:"けんじつ",meaning:"견실하다",sentenceJp:"堅実な投資を心がけている。",sentenceKr:"견실한 투자를 하려고 노력하고 있다."},
-      {jp:"衰退",reading:"すいたい",meaning:"쇠퇴하다",sentenceJp:"伝統産業が衰退の危機にある。",sentenceKr:"전통 산업이 쇠퇴의 위기에 처해 있다."},
-      {jp:"即座",reading:"そくざ",meaning:"즉시",sentenceJp:"彼は即座に返事をした。",sentenceKr:"그는 즉시 대답했다."},
-      {jp:"阻止",reading:"そし",meaning:"저지하다",sentenceJp:"暴走を何としても阻止しなければならない。",sentenceKr:"폭주를 어떻게 해서든 저지해야 한다."},
-      {jp:"網羅",reading:"もうら",meaning:"망라하다",sentenceJp:"この資料は必要な情報をほぼ網羅している。",sentenceKr:"이 자료는 필요한 정보를 거의 망라하고 있다."},
-      {jp:"暗示",reading:"あんじ",meaning:"암시하다",sentenceJp:"彼の態度は変更の可能性を暗示している。",sentenceKr:"그의 태도는 변경 가능성을 암시하고 있다。"}
+      {jp:"出勤",reading:"しゅっきん",meaning:"출근",sentenceJp:"毎朝8時に出勤しています。",sentenceKr:"매일 아침 8시에 출근하고 있습니다."},
+      {jp:"退社",reading:"たいしゃ",meaning:"퇴사, 퇴근",sentenceJp:"彼は事情があって会社を退社した。",sentenceKr:"그는 사정이 있어서 회사를 그만두었다."},
+      {jp:"会議",reading:"かいぎ",meaning:"회의",sentenceJp:"午後から大事な会議があります。",sentenceKr:"오후에 중요한 회의가 있습니다."},
+      {jp:"資料",reading:"しりょう",meaning:"자료",sentenceJp:"会議の資料をメールで送ります。",sentenceKr:"회의 자료를 메일로 보내겠습니다."},
+      {jp:"締め切り",reading:"しめきり",meaning:"마감",sentenceJp:"この仕事の締め切りは金曜日です。",sentenceKr:"이 일의 마감은 금요일입니다."},
+      {jp:"担当",reading:"たんとう",meaning:"담당",sentenceJp:"私はこのプロジェクトの担当です。",sentenceKr:"저는 이 프로젝트를 담당하고 있습니다."},
+      {jp:"部署",reading:"ぶしょ",meaning:"부서",sentenceJp:"異動で新しい部署に配属された。",sentenceKr:"인사 이동으로 새로운 부서에 배치되었다."},
+      {jp:"残業",reading:"ざんぎょう",meaning:"야근",sentenceJp:"今日は残業せずに帰りたい。",sentenceKr:"오늘은 야근 안 하고 돌아가고 싶다."},
+      {jp:"報告",reading:"ほうこく",meaning:"보고",sentenceJp:"進捗を上司に報告してください。",sentenceKr:"진행 상황을 상사에게 보고해 주세요."},
+      {jp:"連絡",reading:"れんらく",meaning:"연락",sentenceJp:"何かあればすぐに連絡してください。",sentenceKr:"무슨 일이 있으면 바로 연락해 주세요."},
+      {jp:"確認",reading:"かくにん",meaning:"확인",sentenceJp:"内容をよく確認してから送信してください。",sentenceKr:"내용을 잘 확인한 다음에 전송해 주세요."},
+      {jp:"調整",reading:"ちょうせい",meaning:"조정",sentenceJp:"日程を再度調整させていただきます。",sentenceKr:"일정을 다시 조정하겠습니다."},
+      {jp:"締める",reading:"しめる",meaning:"조이다, 마무리하다",sentenceJp:"年度末は経費をきちんと締める必要がある。",sentenceKr:"연말에는 경비를 제대로 마무리할 필요가 있다."},
+      {jp:"依頼",reading:"いらい",meaning:"의뢰, 부탁",sentenceJp:"先ほどの件、再度依頼してもよろしいでしょうか。",sentenceKr:"아까 그 건, 다시 한 번 부탁드려도 될까요?"},
+      {jp:"了承",reading:"りょうしょう",meaning:"양해, 승낙",sentenceJp:"内容をご確認のうえ、ご了承ください。",sentenceKr:"내용을 확인하시고 양해 부탁드립니다."},
+      {jp:"検討",reading:"けんとう",meaning:"검토",sentenceJp:"こちらの案について検討いたします。",sentenceKr:"이 안건에 대해 검토하겠습니다."},
+      {jp:"調査",reading:"ちょうさ",meaning:"조사",sentenceJp:"市場調査の結果が出ました。",sentenceKr:"시장 조사 결과가 나왔습니다."},
+      {jp:"対応",reading:"たいおう",meaning:"대응",sentenceJp:"お客様からのクレームに迅速に対応した。",sentenceKr:"고객 불만에 신속하게 대응했다."},
+      {jp:"提出",reading:"ていしゅつ",meaning:"제출",sentenceJp:"レポートの提出期限は明日までです。",sentenceKr:"레포트 제출 기한은 내일까지입니다."},
+      {jp:"印刷",reading:"いんさつ",meaning:"인쇄",sentenceJp:"会議用の資料を30部印刷してください。",sentenceKr:"회의용 자료를 30부 인쇄해 주세요."}
     ],
-    // Day 2
+    // Day 2 – 비즈니스 커뮤니케이션
     [
-      {jp:"克服",reading:"こくふく",meaning:"극복하다",sentenceJp:"困難を克服して目標を達成した。",sentenceKr:"어려움을 극복하고 목표를 달성했다."},
-      {jp:"継承",reading:"けいしょう",meaning:"계승하다",sentenceJp:"文化を次世代に継承する。",sentenceKr:"문화를 다음 세대로 계승한다."},
-      {jp:"排除",reading:"はいじょ",meaning:"배제하다",sentenceJp:"危険要因を事前に排除する。",sentenceKr:"위험 요인을 사전에 배제한다."},
-      {jp:"露呈",reading:"ろてい",meaning:"노출되다",sentenceJp:"問題点が一気に露呈した。",sentenceKr:"문제점이 한꺼번에 드러났다."},
-      {jp:"賠償",reading:"ばいしょう",meaning:"배상하다",sentenceJp:"会社は損害を賠償する責任がある。",sentenceKr:"회사는 손해를 배상할 책임이 있다."},
-      {jp:"誇張",reading:"こちょう",meaning:"과장하다",sentenceJp:"彼の話は少し誇張されている。",sentenceKr:"그의 이야기는 조금 과장되어 있다."},
-      {jp:"腐敗",reading:"ふはい",meaning:"부패하다",sentenceJp:"政治の腐敗が問題になっている。",sentenceKr:"정치의 부패가 문제가 되고 있다."},
-      {jp:"妨げる",reading:"さまたげる",meaning:"방해하다",sentenceJp:"睡眠不足が集中力を妨げる。",sentenceKr:"수면 부족이 집중력을 방해한다."},
-      {jp:"陳列",reading:"ちんれつ",meaning:"진열하다",sentenceJp:"新製品を店頭に陳列する。",sentenceKr:"신제품을 매장에 진열한다."},
-      {jp:"融通",reading:"ゆうずう",meaning:"융통성",sentenceJp:"彼は融通が利くタイプだ。",sentenceKr:"그는 융통성이 있는 타입이다."},
-      {jp:"退治",reading:"たいじ",meaning:"퇴치하다",sentenceJp:"害虫を退治する薬。",sentenceKr:"해충을 퇴치하는 약."},
-      {jp:"謙虚",reading:"けんきょ",meaning:"겸손하다",sentenceJp:"彼女는 성공해도 謙虚なままだ。",sentenceKr:"그녀는 성공하고도 여전히 겸손하다."},
-      {jp:"寛容",reading:"かんよう",meaning:"관용적이다",sentenceJp:"彼は他人の失敗に寛容だ。",sentenceKr:"그는 타인의 실수에 관용적이다."},
-      {jp:"堅固",reading:"けんご",meaning:"견고하다",sentenceJp:"堅固な建物が地震に耐えた。",sentenceKr:"견고한 건물이 지진을 견뎌냈다."},
-      {jp:"模索",reading:"もさく",meaning:"모색하다",sentenceJp:"新しい解決策を模索する。",sentenceKr:"새로운 해결책을 모색한다."},
-      {jp:"踏襲",reading:"とうしゅう",meaning:"답습하다",sentenceJp:"前例を踏襲するだけでは成長できない。",sentenceKr:"전례를 답습하는 것만으로는 성장할 수 없다."},
-      {jp:"蘇生",reading:"そせい",meaning:"소생하다",sentenceJp:"心肺蘇生法を学ぶ。",sentenceKr:"심폐소생법을 배운다."},
-      {jp:"阻害",reading:"そがい",meaning:"저해하다",sentenceJp:"過度な規制が発展を阻害している。",sentenceKr:"과도한 규제가 발전을 저해하고 있다."},
-      {jp:"考慮",reading:"こうりょ",meaning:"고려하다",sentenceJp:"状況を総合的に考慮して判断する。",sentenceKr:"상황을 종합적으로 고려해 판단한다."},
-      {jp:"希求",reading:"ききゅう",meaning:"갈망하다",sentenceJp:"人々は平和を希求している。",sentenceKr:"사람들은 평화를 갈망하고 있다."}
+      {jp:"訪問",reading:"ほうもん",meaning:"방문",sentenceJp:"明日は重要なお客様を訪問します。",sentenceKr:"내일은 중요한 고객을 방문합니다."},
+      {jp:"商談",reading:"しょうだん",meaning:"상담, 비즈니스 미팅",sentenceJp:"新規取引先との商談が予定されている。",sentenceKr:"새 거래처와의 비즈니스 미팅이 예정되어 있다."},
+      {jp:"契約",reading:"けいやく",meaning:"계약",sentenceJp:"契約の内容をもう一度ご確認ください。",sentenceKr:"계약 내용을 한 번 더 확인해 주세요."},
+      {jp:"条件",reading:"じょうけん",meaning:"조건",sentenceJp:"条件が合わず、契約には至らなかった。",sentenceKr:"조건이 맞지 않아 계약에 이르지 못했다."},
+      {jp:"見積もり",reading:"みつもり",meaning:"견적",sentenceJp:"来週までに見積もりを提出してください。",sentenceKr:"다음 주까지 견적을 제출해 주세요."},
+      {jp:"提案",reading:"ていあん",meaning:"제안",sentenceJp:"新しいサービスについて提案させていただきます。",sentenceKr:"새로운 서비스에 대해 제안드리겠습니다."},
+      {jp:"説明",reading:"せつめい",meaning:"설명",sentenceJp:"商品の特徴を分かりやすく説明した。",sentenceKr:"상품의 특징을 알기 쉽게 설명했다."},
+      {jp:"納得",reading:"なっとく",meaning:"납득",sentenceJp:"お客様に納得していただけるように説明する。",sentenceKr:"고객이 납득할 수 있도록 설명한다."},
+      {jp:"合意",reading:"ごうい",meaning:"합의",sentenceJp:"両社は最終的に条件に合意した。",sentenceKr:"양사는 최종적으로 조건에 합의했다."},
+      {jp:"印象",reading:"いんしょう",meaning:"인상",sentenceJp:"第一印象がとても良かった。",sentenceKr:"첫인상이 매우 좋았다."},
+      {jp:"訪ねる",reading:"たずねる",meaning:"방문하다, 묻다",sentenceJp:"詳しい点は担当者に訪ねてください。",sentenceKr:"자세한 점은 담당자에게 문의해 주세요."},
+      {jp:"了承を得る",reading:"りょうしょうをえる",meaning:"양해를 얻다",sentenceJp:"事前に上司の了承を得てから進めた。",sentenceKr:"사전에 상사의 양해를 얻은 뒤 진행했다."},
+      {jp:"説得",reading:"せっとく",meaning:"설득",sentenceJp:"取引先を説得するのに時間がかかった。",sentenceKr:"거래처를 설득하는 데 시간이 걸렸다."},
+      {jp:"交渉",reading:"こうしょう",meaning:"교섭, 협상",sentenceJp:"価格について長時間交渉した。",sentenceKr:"가격에 대해 오랫동안 협상했다."},
+      {jp:"印刷物",reading:"いんさつぶつ",meaning:"인쇄물",sentenceJp:"イベント用の印刷物を業者に頼んだ。",sentenceKr:"이벤트용 인쇄물을 업체에 맡겼다."},
+      {jp:"合併",reading:"がっぺい",meaning:"합병",sentenceJp:"二つの会社が合併することになった。",sentenceKr:"두 회사가 합병하게 되었다."},
+      {jp:"取引先",reading:"とりひきさき",meaning:"거래처",sentenceJp:"長年付き合いのある取引先だ。",sentenceKr:"오랫동안 거래해 온 거래처이다."},
+      {jp:"丁寧",reading:"ていねい",meaning:"정중함, 꼼꼼함",sentenceJp:"丁寧な対応が信頼につながる。",sentenceKr:"정중한 대응이 신뢰로 이어진다."},
+      {jp:"調子",reading:"ちょうし",meaning:"상태, 컨디션",sentenceJp:"最近パソコンの調子があまり良くない。",sentenceKr:"요즘 컴퓨터 상태가 별로 좋지 않다."},
+      {jp:"至急",reading:"しきゅう",meaning:"지급, 아주 급함",sentenceJp:"至急ご対応いただけますと幸いです。",sentenceKr:"지급으로 대응해 주시면 감사하겠습니다."}
     ],
-    // Day 3
+    // Day 3 – 사내 커뮤니케이션 & 업무 환경
     [
-      {jp:"陶酔",reading:"とうすい",meaning:"도취하다",sentenceJp:"彼は音楽に陶酔している。",sentenceKr:"그는 음악에 도취해 있다."},
-      {jp:"逸脱",reading:"いつだつ",meaning:"일탈하다",sentenceJp:"規範から逸脱した行為だ。",sentenceKr:"규범에서 일탈한 행위다."},
-      {jp:"克明",reading:"こくめい",meaning:"세밀하다",sentenceJp:"出来事を克明に記録する。",sentenceKr:"일어났던 일을 세밀히 기록한다."},
-      {jp:"懸念",reading:"けねん",meaning:"우려",sentenceJp:"将来の景気悪化が懸念される。",sentenceKr:"향후 경기 악화가 우려된다."},
-      {jp:"堪能",reading:"たんのう",meaning:"능숙하다",sentenceJp:"彼女はフランス語に堪能だ。",sentenceKr:"그녀는 프랑스어에 능숙하다."},
-      {jp:"精通",reading:"せいつう",meaning:"정통하다",sentenceJp:"彼は法律に精通している。",sentenceKr:"그는 법률에 정통하다."},
-      {jp:"顕在化",reading:"けんざいか",meaning:"현실로 드러나다",sentenceJp:"潜在的な問題が顕在化した。",sentenceKr:"잠재돼 있던 문제가 현실로 드러났다."},
-      {jp:"陳腐",reading:"ちんぷ",meaning:"진부하다",sentenceJp:"その表現は少し陳腐だ。",sentenceKr:"그 표현은 조금 진부하다."},
-      {jp:"緊迫",reading:"きんぱく",meaning:"긴박하다",sentenceJp:"会場には緊迫した空気が流れていた。",sentenceKr:"회장에는 긴박한 공기가 흐르고 있었다."},
-      {jp:"腐食",reading:"ふしょく",meaning:"부식하다",sentenceJp:"金属が湿気で腐食した。",sentenceKr:"금속이 습기로 인해 부식되었다."},
-      {jp:"錯覚",reading:"さっかく",meaning:"착각",sentenceJp:"時間が早く過ぎたような錯覚に陥る。",sentenceKr:"시간이 빨리 지나간 듯한 착각에 빠진다."},
-      {jp:"緩急",reading:"かんきゅう",meaning:"완급",sentenceJp:"話の緩急をつける。",sentenceKr:"이야기의 완급을 조절한다."},
-      {jp:"退避",reading:"たいひ",meaning:"퇴피하다",sentenceJp:"避難指示に従って安全な場所へ退避した。",sentenceKr:"대피 지시에 따라 안전한 곳으로 피했다."},
-      {jp:"縮小",reading:"しゅくしょう",meaning:"축소하다",sentenceJp:"事業規模を縮小せざるを得ない。",sentenceKr:"사업 규모를 축소하지 않을 수 없다."},
-      {jp:"配慮",reading:"はいりょ",meaning:"배려하다",sentenceJp:"周囲への配慮を忘れてはならない。",sentenceKr:"주변에 대한 배려를 잊어서는 안 된다."},
-      {jp:"排斥",reading:"はいせき",meaning:"배척하다",sentenceJp:"異なる意見を排斥すべきではない。",sentenceKr:"다른 의견을 배척해서는 안 된다."},
-      {jp:"喚起",reading:"かんき",meaning:"환기, 일깨움",sentenceJp:"注意を喚起するポスターを作成した。",sentenceKr:"주의를 환기시키는 포스터를 제작했다."},
-      {jp:"改訂",reading:"かいてい",meaning:"개정하다",sentenceJp:"教科書が最新の内容に改訂された。",sentenceKr:"교과서가 최신 내용으로 개정되었다."},
-      {jp:"精算",reading:"せいさん",meaning:"정산하다",sentenceJp:"旅費を精算する。",sentenceKr:"여비를 정산한다."},
-      {jp:"浸透",reading:"しんとう",meaning:"침투하다, 스며들다",sentenceJp:"新しい価値観가 社会に浸透してきた。",sentenceKr:"새로운 가치관이 사회에 스며들어 왔다."}
+      {jp:"雰囲気",reading:"ふんいき",meaning:"분위기",sentenceJp:"この会社は職場の雰囲気が明るい。",sentenceKr:"이 회사는 직장 분위기가 밝다."},
+      {jp:"規則",reading:"きそく",meaning:"규칙",sentenceJp:"社内の規則をよく読んでおいてください。",sentenceKr:"사내 규칙을 잘 읽어 두세요."},
+      {jp:"勤務",reading:"きんむ",meaning:"근무",sentenceJp:"現在は在宅勤務が中心です。",sentenceKr:"현재는 재택근무가 중심입니다."},
+      {jp:"評価",reading:"ひょうか",meaning:"평가",sentenceJp:"上半期の業績が高く評価された。",sentenceKr:"상반기 실적이 높게 평가되었다."},
+      {jp:"昇進",reading:"しょうしん",meaning:"승진",sentenceJp:"彼は課長に昇進した。",sentenceKr:"그는 과장으로 승진했다."},
+      {jp:"人事",reading:"じんじ",meaning:"인사",sentenceJp:"人事部から連絡があった。",sentenceKr:"인사부에서 연락이 왔다."},
+      {jp:"会費",reading:"かいひ",meaning:"회비",sentenceJp:"懇親会の会費はいくらですか。",sentenceKr:"친목회 회비는 얼마입니까?"},
+      {jp:"参加",reading:"さんか",meaning:"참가",sentenceJp:"明日のイベントに参加しますか。",sentenceKr:"내일 이벤트에 참가하나요?"},
+      {jp:"欠席",reading:"けっせき",meaning:"결석, 불참",sentenceJp:"体調不良のため会議を欠席した。",sentenceKr:"몸이 안 좋아서 회의에 불참했다."},
+      {jp:"案内",reading:"あんない",meaning:"안내",sentenceJp:"新入社員向けの案内メールを作成する。",sentenceKr:"신입사원용 안내 메일을 작성한다."},
+      {jp:"社内",reading:"しゃない",meaning:"사내",sentenceJp:"社内でのコミュニケーションを大切にしている。",sentenceKr:"사내 커뮤니케이션을 중요하게 생각한다."},
+      {jp:"印鑑",reading:"いんかん",meaning:"도장",sentenceJp:"契約書に印鑑を押してください。",sentenceKr:"계약서에 도장을 찍어 주세요."},
+      {jp:"経費",reading:"けいひ",meaning:"경비",sentenceJp:"出張の経費を精算した。",sentenceKr:"출장 경비를 정산했다."},
+      {jp:"調子がいい",reading:"ちょうしがいい",meaning:"상태가 좋다",sentenceJp:"今日は仕事の調子がいい。",sentenceKr:"오늘은 일이 잘 풀린다."},
+      {jp:"慣れる",reading:"なれる",meaning:"익숙해지다",sentenceJp:"新しい環境にも少しずつ慣れてきた。",sentenceKr:"새로운 환경에도 조금씩 익숙해졌다."},
+      {jp:"相談",reading:"そうだん",meaning:"상담, 상의",sentenceJp:"分からないことがあれば、すぐに相談してください。",sentenceKr:"모르는 것이 있으면 바로 상의해 주세요."},
+      {jp:"社長",reading:"しゃちょう",meaning:"사장",sentenceJp:"社長の方針が社内に共有された。",sentenceKr:"사장의 방침이 사내에 공유되었다."},
+      {jp:"休憩",reading:"きゅうけい",meaning:"휴식",sentenceJp:"少し休憩してから作業を再開しよう。",sentenceKr:"잠깐 쉬었다가 작업을 다시 시작하자."},
+      {jp:"電源",reading:"でんげん",meaning:"전원",sentenceJp:"帰る前にパソコンの電源を切ってください。",sentenceKr:"퇴근 전에 컴퓨터 전원을 꺼 주세요."},
+      {jp:"配布",reading:"はいふ",meaning:"배포",sentenceJp:"会議の前に資料を配布しておいた。",sentenceKr:"회의 전에 자료를 배포해 두었다."}
     ],
-    // Day 4
+    // Day 4 – 일상 생활 & 소비
     [
-      {jp:"堕落",reading:"だらく",meaning:"타락하다",sentenceJp:"権力에堕落する。",sentenceKr:"권력에 타락하다."},
-      {jp:"妥当",reading:"だとう",meaning:"타당하다",sentenceJp:"その結論は妥当だと思う。",sentenceKr:"그 결론은 타당하다고 생각한다."},
-      {jp:"動揺",reading:"どうよう",meaning:"동요하다",sentenceJp:"突然のニュースに心が動揺した。",sentenceKr:"갑작스러운 소식에 마음이 동요했다."},
-      {jp:"動員",reading:"どういん",meaning:"동원하다",sentenceJp:"多くの人材を動員してプロジェクトを進める。",sentenceKr:"많은 인재를 동원해 프로젝트를 진행한다."},
-      {jp:"難航",reading:"なんこう",meaning:"난항을 겪다",sentenceJp:"交渉は難航している。",sentenceKr:"교섭은 난항을 겪고 있다."},
-      {jp:"配属",reading:"はいぞく",meaning:"배치하다",sentenceJp:"新入社員が各部署に配属された。",sentenceKr:"신입사원이 각 부서에 배치되었다."},
-      {jp:"破棄",reading:"はき",meaning:"파기하다",sentenceJp:"契約を一方的に破棄した。",sentenceKr:"계약을 일방적으로 파기했다."},
-      {jp:"培う",reading:"つちかう",meaning:"기르다, 배양하다",sentenceJp:"経験を通じて能力を培う。",sentenceKr:"경험을 통해 능력을 기른다."},
-      {jp:"頻発",reading:"ひんぱつ",meaning:"빈발하다",sentenceJp:"事故が頻発している地域。",sentenceKr:"사고가 빈발하는 지역."},
-      {jp:"密接",reading:"みっせつ",meaning:"밀접하다",sentenceJp:"両者の関係は密接だ。",sentenceKr:"양자의 관계는 밀접하다."},
-      {jp:"抑制",reading:"よくせい",meaning:"억제하다",sentenceJp:"インフレ를抑制する政策。",sentenceKr:"인플레이션을 억제하는 정책."},
-      {jp:"変遷",reading:"へんせん",meaning:"변천하다",sentenceJp:"時代の変遷を振り返る。",sentenceKr:"시대의 변천을 돌아본다."},
-      {jp:"錯誤",reading:"さくご",meaning:"착오",sentenceJp:"判断の錯誤が重大な結果を招いた。",sentenceKr:"판단 착오가 중대한 결과를 초래했다."},
-      {jp:"是正",reading:"ぜせい",meaning:"시정하다",sentenceJp:"不公平な状況を是正する。",sentenceKr:"불공평한 상황을 시정하다."},
-      {jp:"妥結",reading:"だけつ",meaning:"타결되다",sentenceJp:"長い交渉の末、ようやく妥結した。",sentenceKr:"긴 협상 끝에 마침내 타결되었다."},
-      {jp:"配慮",reading:"はいりょ",meaning:"배려하다",sentenceJp:"環境への配慮が求められている。",sentenceKr:"환경에 대한 배려가 요구되고 있다."},
-      {jp:"改訂",reading:"かいてい",meaning:"개정하다",sentenceJp:"社内規定が全面的に改訂された。",sentenceKr:"사내 규정이 전면 개정되었다."},
-      {jp:"露呈",reading:"ろてい",meaning:"드러나다",sentenceJp:"管理体制の甘さが露呈した。",sentenceKr:"관리 체계의 허술함이 드러났다."},
-      {jp:"動向",reading:"どうこう",meaning:"동향",sentenceJp:"市場動向を常にチェックする。",sentenceKr:"시장 동향을 항상 체크한다."},
-      {jp:"抑止",reading:"よくし",meaning:"억지, 억제",sentenceJp:"犯罪抑止のための対策。",sentenceKr:"범죄 억제를 위한 대책."}
+      {jp:"家賃",reading:"やちん",meaning:"월세",sentenceJp:"家賃が高くて引っ越しを考えている。",sentenceKr:"월세가 비싸서 이사를 생각하고 있다."},
+      {jp:"光熱費",reading:"こうねつひ",meaning:"공과금(수도/전기/가스)",sentenceJp:"光熱費が去年より増えた。",sentenceKr:"공과금이 작년보다 늘었다."},
+      {jp:"定期券",reading:"ていきけん",meaning:"정기권",sentenceJp:"通勤のために定期券を買った。",sentenceKr:"통근을 위해 정기권을 샀다."},
+      {jp:"乗り換え",reading:"のりかえ",meaning:"환승",sentenceJp:"この駅で地下鉄に乗り換えます。",sentenceKr:"이 역에서 지하철로 갈아탑니다."},
+      {jp:"改札",reading:"かいさつ",meaning:"개찰구",sentenceJp:"改札の前で友達と待ち合わせした。",sentenceKr:"개찰구 앞에서 친구와 만나기로 했다."},
+      {jp:"渋滞",reading:"じゅうたい",meaning:"교통체증",sentenceJp:"朝の渋滞で会社に遅れそうだ。",sentenceKr:"아침 교통체증 때문에 회사에 늦을 것 같다."},
+      {jp:"割引",reading:"わりびき",meaning:"할인",sentenceJp:"このクーポンを使うと10％割引になる。",sentenceKr:"이 쿠폰을 사용하면 10% 할인된다."},
+      {jp:"返品",reading:"へんぴん",meaning:"반품",sentenceJp:"サイズが合わなかったので商品を返品した。",sentenceKr:"사이즈가 맞지 않아 상품을 반품했다."},
+      {jp:"送料",reading:"そうりょう",meaning:"배송비",sentenceJp:"5千円以上で送料が無料になります。",sentenceKr:"5천 엔 이상이면 배송비가 무료가 됩니다."},
+      {jp:"会計",reading:"かいけい",meaning:"계산, 회계",sentenceJp:"お会計は別々でお願いします。",sentenceKr:"계산은 따로 부탁드립니다."},
+      {jp:"ポイント",reading:"ポイント",meaning:"포인트",sentenceJp:"ポイントカードはお持ちですか。",sentenceKr:"포인트 카드는 가지고 계신가요?"},
+      {jp:"支払い",reading:"しはらい",meaning:"지불, 결제",sentenceJp:"支払いはクレジットカードでお願いします。",sentenceKr:"지불은 신용카드로 부탁드립니다."},
+      {jp:"預ける",reading:"あずける",meaning:"맡기다",sentenceJp:"荷物をフロントに預けた。",sentenceKr:"짐을 프런트에 맡겼다."},
+      {jp:"日用品",reading:"にちようひん",meaning:"생활용품",sentenceJp:"週末に日用品をまとめて買う。",sentenceKr:"주말에 생활용품을 몰아서 산다."},
+      {jp:"家事",reading:"かじ",meaning:"집안일",sentenceJp:"家事と育児の両立は大変だ。",sentenceKr:"집안일과 육아를 병행하는 것은 힘들다."},
+      {jp:"貯金",reading:"ちょきん",meaning:"저금",sentenceJp:"毎月少しずつ貯金している。",sentenceKr:"매달 조금씩 저금하고 있다."},
+      {jp:"通販",reading:"つうはん",meaning:"통신판매, 온라인 쇼핑",sentenceJp:"最近は通販で買い物をすることが多い。",sentenceKr:"요즘은 온라인 쇼핑으로 물건을 많이 산다."},
+      {jp:"宅配",reading:"たくはい",meaning:"택배",sentenceJp:"宅配便の受け取り時間を変更した。",sentenceKr:"택배 수령 시간을 변경했다."},
+      {jp:"締め切る",reading:"しめきる",meaning:"마감하다",sentenceJp:"このキャンペーンは今週で締め切ります。",sentenceKr:"이 캠페인은 이번 주로 마감합니다."},
+      {jp:"予約",reading:"よやく",meaning:"예약",sentenceJp:"明日の夕食はネットで予約した。",sentenceKr:"내일 저녁은 인터넷으로 예약했다."}
     ],
-    // Day 5
+    // Day 5 – 시험/공부/자기계발
     [
-      {jp:"圧倒",reading:"あっとう",meaning:"압도하다",sentenceJp:"観客は彼の演奏に圧倒された。",sentenceKr:"관객은 그의 연주에 압도되었다."},
-      {jp:"一掃",reading:"いっそう",meaning:"일소하다",sentenceJp:"古い制度を一掃する。",sentenceKr:"낡은 제도를 일소한다."},
-      {jp:"逸話",reading:"いつわ",meaning:"일화",sentenceJp:"有名な逸話が数多く残っている。",sentenceKr:"유명한 일화가 많이 남아 있다."},
-      {jp:"応酬",reading:"おうしゅう",meaning:"응수, 주고받음",sentenceJp:"激しい議論の応酬が続いた。",sentenceKr:"격렬한 논쟁의 공방이 이어졌다."},
-      {jp:"横行",reading:"おうこう",meaning:"횡행하다",sentenceJp:"詐欺が横行している。",sentenceKr:"사기가 횡행하고 있다."},
-      {jp:"回避",reading:"かいひ",meaning:"회피하다",sentenceJp:"責任を回避しようとしている。",sentenceKr:"책임을 회피하려 하고 있다."},
-      {jp:"介入",reading:"かいにゅう",meaning:"개입하다",sentenceJp:"市場への過度な介入は避けるべきだ。",sentenceKr:"시장에 대한 과도한 개입은 피해야 한다."},
-      {jp:"顧慮",reading:"こりょ",meaning:"고려하다",sentenceJp:"相手の立場を顧慮して発言する。",sentenceKr:"상대의 입장을 고려해 발언한다."},
-      {jp:"合致",reading:"がっち",meaning:"합치하다",sentenceJp:"双方の意見が合致した。",sentenceKr:"쌍방의 의견이 일치했다."},
-      {jp:"示唆",reading:"しさ",meaning:"시사하다",sentenceJp:"研究結果は新しい可能性を示唆している。",sentenceKr:"연구 결과는 새로운 가능성을 시사하고 있다."},
-      {jp:"謝絶",reading:"しゃぜつ",meaning:"사절하다",sentenceJp:"取材を丁重に謝絶した。",sentenceKr:"취재를 정중히 사절했다."},
-      {jp:"侵害",reading:"しんがい",meaning:"침해하다",sentenceJp:"権利を侵害する行為。",sentenceKr:"권리를 침해하는 행위."},
-      {jp:"振興",reading:"しんこう",meaning:"진흥하다",sentenceJp:"地域産業を振興する。",sentenceKr:"지역 산업을 진흥한다."},
-      {jp:"推奨",reading:"すいしょう",meaning:"권장하다",sentenceJp:"専門家がこの方法を推奨している。",sentenceKr:"전문가가 이 방법을 권장하고 있다."},
-      {jp:"是認",reading:"ぜにん",meaning:"시인하다, 인정하다",sentenceJp:"その行為を是認するわけにはいかない。",sentenceKr:"그 행동을 인정할 수는 없다."},
-      {jp:"遷移",reading:"せんい",meaning:"천이, 변이",sentenceJp:"状態が安定から不安定へ遷移した。",sentenceKr:"상태가 안정에서 불안정으로 변했다."},
-      {jp:"阻む",reading:"はばむ",meaning:"막다",sentenceJp:"雨が移動を阻んだ。",sentenceKr:"비가 이동을 막았다."},
-      {jp:"補填",reading:"ほてん",meaning:"보충, 보전하다",sentenceJp:"不足分を補填する。",sentenceKr:"부족분을 보충한다."},
-      {jp:"傍観",reading:"ぼうかん",meaning:"방관하다",sentenceJp:"問題を傍観しているだけではいけない。",sentenceKr:"문제를 방관만 해서는 안 된다."},
-      {jp:"露骨",reading:"ろこつ",meaning:"노골적이다",sentenceJp:"露骨な批判を受けた。",sentenceKr:"노골적인 비판을 받았다."}
+      {jp:"受験",reading:"じゅけん",meaning:"수험, 시험 응시",sentenceJp:"彼は来月の試験を受験する予定だ。",sentenceKr:"그는 다음 달 시험을 볼 예정이다."},
+      {jp:"合格",reading:"ごうかく",meaning:"합격",sentenceJp:"努力の結果、ようやく合格できた。",sentenceKr:"노력한 끝에 드디어 합격할 수 있었다."},
+      {jp:"不合格",reading:"ふごうかく",meaning:"불합격",sentenceJp:"今回は不合格だったが、次は頑張りたい。",sentenceKr:"이번에는 불합격이었지만 다음에는 노력하고 싶다."},
+      {jp:"対策",reading:"たいさく",meaning:"대책, 대비",sentenceJp:"リスニング対策として毎日音声を聞いている。",sentenceKr:"리스닝 대비로 매일 음성을 듣고 있다."},
+      {jp:"暗記",reading:"あんき",meaning:"암기",sentenceJp:"単語を暗記するのは大変だ。",sentenceKr:"단어를 암기하는 것은 힘들다."},
+      {jp:"復習",reading:"ふくしゅう",meaning:"복습",sentenceJp:"寝る前に今日勉強した内容を復習する。",sentenceKr:"자기 전에 오늘 공부한 내용을 복습한다."},
+      {jp:"予習",reading:"よしゅう",meaning:"예습",sentenceJp:"授業の前に必ず予習しておく。",sentenceKr:"수업 전에 반드시 예습해 둔다."},
+      {jp:"集中",reading:"しゅうちゅう",meaning:"집중",sentenceJp:"静かなカフェのほうが集中しやすい。",sentenceKr:"조용한 카페가 더 집중하기 쉽다."},
+      {jp:"緊張",reading:"きんちょう",meaning:"긴장",sentenceJp:"本番の試験ではとても緊張した。",sentenceKr:"본 시험에서는 매우 긴장했다."},
+      {jp:"目標",reading:"もくひょう",meaning:"목표",sentenceJp:"今年の目標はJPT700点を取ることだ。",sentenceKr:"올해 목표는 JPT 700점을 받는 것이다."},
+      {jp:"習慣",reading:"しゅうかん",meaning:"습관",sentenceJp:"毎日少しずつ勉強する習慣をつけたい。",sentenceKr:"매일 조금씩 공부하는 습관을 들이고 싶다."},
+      {jp:"継続",reading:"けいぞく",meaning:"계속, 지속",sentenceJp:"語学学習は継続することが一番大切だ。",sentenceKr:"어학 공부는 계속하는 것이 가장 중요하다."},
+      {jp:"記録",reading:"きろく",meaning:"기록",sentenceJp:"勉強時間をアプリに記録している。",sentenceKr:"공부 시간을 앱에 기록하고 있다."},
+      {jp:"効率",reading:"こうりつ",meaning:"효율",sentenceJp:"短い時間で効率よく勉強したい。",sentenceKr:"짧은 시간에 효율적으로 공부하고 싶다."},
+      {jp:"理解",reading:"りかい",meaning:"이해",sentenceJp:"意味を理解してから覚えるようにしている。",sentenceKr:"뜻을 이해한 후에 외우도록 하고 있다."},
+      {jp:"達成",reading:"たっせい",meaning:"달성",sentenceJp:"小さな目標を一つずつ達成していく。",sentenceKr:"작은 목표를 하나씩 달성해 나간다."},
+      {jp:"挫折",reading:"ざせつ",meaning:"좌절",sentenceJp:"何度も挫折しそうになったが、諦めなかった。",sentenceKr:"몇 번이나 좌절할 뻔했지만 포기하지 않았다."},
+      {jp:"見直す",reading:"みなおす",meaning:"다시 보다, 재검토하다",sentenceJp:"テストを提出する前に必ず見直す。",sentenceKr:"시험을 제출하기 전에 반드시 다시 확인한다."},
+      {jp:"工夫",reading:"くふう",meaning:"궁리, 방법을 짜냄",sentenceJp:"自分に合った勉強法を工夫している。",sentenceKr:"자신에게 맞는 공부법을 궁리하고 있다."},
+      {jp:"達成感",reading:"たっせいかん",meaning:"성취감",sentenceJp:"毎日続けることで大きな達成感が得られる。",sentenceKr:"매일 계속함으로써 큰 성취감을 얻을 수 있다."}
     ]
   ];
 
-  const WORDS_PER_DAY = 20;
   const TOTAL_DAYS = WEEK_WORDS.length; // 5
+  const WORDS_PER_DAY = 20;
   const flatAllWords = WEEK_WORDS.flat();
 
   // -------------------------------
-  // 1-1. 5일치 장문 데이터
+  // 1-1. 5일치 장문 (JPT 700 수준)
   // -------------------------------
   const WEEK_PASSAGES = [
     {
-      title: "1일차 장문 – 프로젝트의 문제점 파악",
-      jp: `ある会社では、業績の低下の原因を正確に把握するために、プロジェクトチームが結成された。チームは過去数年分のデータを精密に分析し、売り上げの変化を如実に示すグラフを作成した。その結果、顕著な問題点として、現場と本社の連携不足が進行を阻んでいることが分かった。そこで、社員の負担を緩和する新しい報告システムが導入され、担当者は週に一度、自分の行動を顧みるミーティングに参加することになった。こうした取り組みが即座に効果を上げたわけではないが、頻繁に意見交換が行われるようになり、少しずつ職場の雰囲気が変化しつつある。`,
-      kr: `어느 회사에서는 실적 하락의 원인을 정확히 파악하기 위해 프로젝트 팀이 결성되었다. 팀은 지난 몇 년간의 데이터를 정밀하게 분석하고, 매출 변화를 여실히 보여 주는 그래프를 만들었다. 그 결과, 현장과 본사의 연계 부족이 진행을 막고 있는 것이 현저한 문제로 드러났다. 이에 따라 직원들의 부담을 완화하기 위한 새로운 보고 시스템이 도입되었고, 담당자들은 주 1회 자신의 행동을 돌아보는 회의에 참여하게 되었다. 이러한 시도가 바로 효과를 낳은 것은 아니지만, 의견 교환이 빈번하게 이루어지면서 서서히 직장의 분위기가 달라지고 있다.`
+      title: "Day 1 장문 – 새로운 직장에 적응하기",
+      jp: `私は四月から新しい会社に入社し、毎朝8時に出勤しています。最初の頃は会社までの通勤経路や勤務時間に慣れず、よくミスをしてしまいました。ある日、重要な会議の資料を印刷し忘れてしまい、締め切り直前に慌てて対応することになりました。そのとき、先輩が「分からないことがあれば、遠慮なく相談してね」と声をかけてくれました。それ以来、仕事の進め方や部署ごとの役割について担当の先輩に確認しながら進めるようになり、少しずつ職場の雰囲気にも慣れてきました。今では、日々の報告や提出物の管理にも余裕ができ、仕事に対する自信も少しずつ高まっています。`,
+      kr: `저는 4월부터 새로운 회사에 입사하여 매일 아침 8시에 출근하고 있습니다. 처음에는 회사까지의 출근 경로나 근무 시간에 익숙하지 않아 자주 실수를 하곤 했습니다. 어느 날에는 중요한 회의 자료를 인쇄하는 것을 잊어버려, 마감 직전에 허겁지겁 대응해야 했습니다. 그때 선배가 “모르는 게 있으면 부담 갖지 말고 언제든지 상의해”라고 말을 건넸습니다. 그 이후로는 업무 진행 방식이나 부서별 역할에 대해 담당 선배에게 확인하면서 일을 진행하게 되었고, 점점 직장 분위기에도 익숙해졌습니다. 지금은 매일 보고나 제출물 관리에도 여유가 생겨, 일에 대한 자신감도 조금씩 높아지고 있습니다.`
     },
     {
-      title: "2일차 장문 – 지방 도시의 부패와 개혁",
-      jp: `ある地方都市では、長年にわたって続いてきた政治の腐敗が問題となっている。公共事業の入札に特定の企業が優先的に選ばれてきたことが、最近の調査で露呈したのだ。市民の怒りは大きく、行政は信頼を回復するために、第三者機関を設置して問題の原因を克服しようとしている。一方で、急激な制度の変更は現場の混乱を招きかねないため、関係者の意見を十分に考慮しながら、段階的な改革案を模索している。若い職員の中には、過去の慣習を踏襲するのではなく、透明性の高い仕組みを築きたいと希求する人も多い。こうした動きが、本当に地域社会の信頼回復につながるのか、今後の取り組みが注目されている。`,
-      kr: `어느 지방 도시에서는 오랫동안 이어져 온 정치적 부패가 문제로 떠오르고 있다. 공공 사업 입찰에서 특정 기업이 우선적으로 선정되어 왔다는 사실이 최근 조사에서 드러난 것이다. 시민들의 분노가 커지자 행정 측은 신뢰를 회복하기 위해 제3의 기관을 설치해 문제의 원인을 극복하려 하고 있다. 그러나 급격한 제도 변경은 현장의 혼란을 초래할 수 있기 때문에, 관계자들의 의견을 충분히 고려하면서 단계적인 개혁안을 모색 중이다. 젊은 공무원들 가운데에는 과거의 관행을 답습하지 않고 투명성이 높은 구조를 만들고 싶다고 갈망하는 사람도 많다. 이러한 움직임이 실제로 지역 사회의 신뢰 회복으로 이어질 수 있을지, 앞으로의 노력이 주목받고 있다.`
+      title: "Day 2 장문 – 첫 번째 상사와의 동행 방문",
+      jp: `ある日、私は上司と一緒に取引先を訪問することになりました。新入社員の私は、商談の場に同席するのが初めてだったので、とても緊張していました。事前に契約の条件や見積もりの内容を何度も確認し、上司からいただいた提案資料の説明も繰り返し練習しました。当日、先方の担当者は丁寧に話を聞いてくださり、上司の説明にも納得した様子でした。私は主にメモを取る役割でしたが、途中で質問をされたときには、準備しておいた内容を落ち着いて説明することができました。商談の後、上司から「よく頑張ったね。次は君が中心になって提案してみよう」と言われ、大きな励みになりました。`,
+      kr: `어느 날 저는 상사와 함께 거래처를 방문하게 되었습니다. 신입사원인 저는 비즈니스 미팅 자리에 동석하는 것이 처음이라 매우 긴장하고 있었습니다. 사전에 계약 조건과 견적 내용을 여러 번 확인하고, 상사에게 받은 제안 자료의 설명도 반복해서 연습했습니다. 당일, 상대 회사 담당자는 정중하게 이야기를 들어 주었고, 상사의 설명에 대해서도 납득한 듯 보였습니다. 저는 주로 메모를 하는 역할이었지만, 중간에 질문을 받았을 때는 미리 준비해 둔 내용을 침착하게 설명할 수 있었습니다. 미팅이 끝난 후 상사는 “잘 해냈어. 다음에는 네가 중심이 되어 제안해 보자”라고 말해 주었고, 그 말이 큰 힘이 되었습니다.`
     },
     {
-      title: "3일차 장문 – 연구 프로젝트와 위험 관리",
-      jp: `新しい医療機器の開発プロジェクトでは、研究チームが膨大なデータを克明に記録しながら作業を進めている。しかし、計画が順調に進んでいるように見えても、専門家の間では将来のリスクについて懸念する声が上がっている。特に、想定外の不具合が顕在化した場合に、どのように患者の安全を守るかという点が重要だ。そこで、チームは緊迫した雰囲気の中で何度もシミュレーションを行い、万が一の時に備えた退避手順を整備した。こうした配慮があるからこそ、開発段階で発生した小さな錯覚や誤差を早期に修正でき、最終的な製品の信頼性を高めることができると考えられている。`,
-      kr: `새로운 의료 기기 개발 프로젝트에서 연구팀은 방대한 데이터를 세밀하게 기록하면서 작업을 진행하고 있다. 겉으로 보기에는 계획이 순조롭게 진행되는 것 같지만, 전문가들 사이에서는 미래의 위험에 대한 우려의 목소리가 나오고 있다. 특히 예기치 못한 고장이 현실로 드러났을 때 어떻게 환자의 안전을 지킬 것인가가 중요하다. 이에 팀은 긴박한 분위기 속에서 여러 차례 시뮬레이션을 실시하고, 만일의 사태에 대비한 대피 절차를 정비했다. 이러한 배려가 있기 때문에 개발 단계에서 발생하는 작은 착오나 오차를 일찍 수정할 수 있고, 최종 제품의 신뢰성을 높일 수 있다고 여겨진다.`
+      title: "Day 3 장문 – 사내 분위기와 커뮤니케이션",
+      jp: `私の会社は社員数が多く、部署もいくつかに分かれていますが、社内の雰囲気は比較的明るいほうだと思います。毎朝の挨拶やちょっとした雑談のおかげで、新入社員の私でも徐々に職場に慣れることができました。また、上司との距離も近く、分からない点があればすぐに相談できる環境が整っています。先日、勤怠システムの不具合について人事部に連絡したところ、担当者が丁寧に対応してくれました。その際、「社内で気になる点があれば、遠慮なく意見を言ってください」と言われ、社員一人ひとりの声を大切にしている会社だと感じました。こうしたコミュニケーションの積み重ねが、社員の評価や昇進にも良い影響を与えているように思います。`,
+      kr: `제가 다니는 회사는 직원 수가 많고 부서도 여러 개로 나뉘어 있지만, 사내 분위기는 비교적 밝은 편이라고 생각합니다. 매일 아침 인사와 가벼운 잡담 덕분에 신입사원인 저도 서서히 직장에 적응할 수 있었습니다. 또한 상사와의 거리도 가까워, 모르는 점이 있으면 바로 상의할 수 있는 환경이 갖춰져 있습니다. 얼마 전 근태 시스템에 문제가 있어서 인사부에 연락했더니, 담당자가 정중하게 대응해 주었습니다. 그때 “사내에서 신경 쓰이는 점이 있으면 주저 말고 의견을 말씀해 주세요”라는 말을 듣고, 회사가 직원 한 사람 한 사람의 목소리를 소중히 여긴다는 느낌을 받았습니다. 이런 커뮤니케이션의 축적이 직원의 평가나 승진에도 좋은 영향을 미치는 것 같다고 느꼈습니다.`
     },
     {
-      title: "4일차 장문 – 조직 개편과 직원들의 불안",
-      jp: `大手企業で大規模な組織改編が発表され、多くの社員が新しい部署に配属されることになった。経営陣は時代の変遷に対応するためには、これまでの体制を是正し、事業構造を縮小・再編する必要があると説明している。しかし、突然の発表に社員の間では動揺が広がり、一部では自分の将来に対する不安から会社への信頼が衰退しかねないとの声も聞かれる。労働組合は交渉が難航しないよう、会社側に十分な説明と配慮を求めている。最終的には、双方が妥当な条件で妥結し、環境への配慮や働き方改革を盛り込んだ新しい制度に改訂されることが期待されている。`,
-      kr: `대기업에서 대규모 조직 개편이 발표되면서 많은 직원이 새로운 부서로 배치되게 되었다. 경영진은 시대의 변천에 대응하려면 기존 체제를 시정하고, 사업 구조를 축소·재편할 필요가 있다고 설명한다. 그러나 갑작스러운 발표에 직원들 사이에서는 동요가 확산되고, 일부에서는 자신의 미래에 대한 불안 때문에 회사에 대한 신뢰가 약화될 수 있다는 목소리도 나온다. 노동조합은 협상이 난항을 겪지 않도록 회사 측에 충분한 설명과 배려를 요구하고 있다. 궁극적으로는 양측이 타당한 조건으로 타결해, 환경에 대한 배려와 일하는 방식의 개선을 담은 새로운 제도로 개정되기를 기대하고 있다.`
+      title: "Day 4 장문 – 생활비와 소비 습관을 돌아보다",
+      jp: `一人暮らしを始めてから、家賃や光熱費、食費など、毎月の支出が思ったより多いことに気付きました。特に、仕事で疲れた日は外食や通販に頼ってしまい、気が付くとクレジットカードの支払いが増えていることがあります。そこで、最近は家計簿アプリを使って支出を記録し、どこにお金を使っているかを見直すようにしました。また、通勤には定期券を利用し、スーパーの割引デーに日用品をまとめて買うなど、少しずつ工夫をしています。最初は面倒だと思っていましたが、毎月の支出が目に見えて減っていくと、節約がゲームのように楽しく感じるようになりました。将来のためにも、無理のない範囲で貯金を続けていきたいと思っています。`,
+      kr: `혼자 살기 시작하고 나서 집세, 공과금, 식비 등 매달 지출이 생각보다 많다는 것을 깨달았습니다. 특히 일이 힘든 날에는 외식이나 온라인 쇼핑에 의존하게 되어, 어느새 카드 결제 금액이 늘어나 있는 경우가 있었습니다. 그래서 요즘은 가계부 앱을 사용해 지출을 기록하고, 돈을 어디에 쓰는지 다시 살펴보게 되었습니다. 또한 통근에는 정기권을 이용하고, 마트 할인날에 생활용품을 한 번에 사는 등 조금씩 방법을 궁리하고 있습니다. 처음에는 귀찮다고 느꼈지만, 매달 지출이 눈에 띄게 줄어드는 것을 보면 절약이 게임처럼 재미있게 느껴지기 시작했습니다. 앞으로를 위해서도 무리가 되지 않는 범위에서 저축을 계속해 나가고 싶습니다.`
     },
     {
-      title: "5일차 장문 – 지역 사회와 기업의 역할",
-      jp: `地方都市の商店街では、人口減少とネット通販의普及によって来客数が減少し、活気를失いつつある。行政は地域産業の振興を図るため、地元企業と連携して新しいイベントを企画した。企業側は、自社の利益だけを是認するのではなく、地域全体の発展に寄与することが長期的には自分たちの利益にも合致すると考えている。しかし、短期的なコスト負担を理由に協力を回避しようとする企業もあり、意見の応酬が続いている。最終的には、多くの企業が住民の生活を顧慮し、詐欺まがいの販売が横行しないように配慮した上で、共同プロジェクトに参加することになった。小さな一歩かもしれないが、こうした取り組みが地域社会の信頼回復につながると期待されている。`,
-      kr: `지방 도시의 상점가는 인구 감소와 인터넷 쇼핑의 보급으로 방문객이 줄어 활기를 잃어 가고 있다. 행정은 지역 산업을 진흥하기 위해 지역 기업과 연계하여 새로운 이벤트를 기획했다. 기업들은 자사 이익만을 인정하는 것이 아니라, 지역 전체의 발전에 기여하는 것이 장기적으로는 자신들의 이익과도 일치한다고 보고 있다. 그러나 단기적인 비용 부담을 이유로 협력을 회피하려는 기업도 있어 의견 공방이 이어지고 있다. 결국 많은 기업이 주민들의 생활을 고려하고, 사기성 판매가 횡행하지 않도록 신경 쓰면서 공동 프로젝트에 참여하기로 했다. 작은 한 걸음일 수 있지만, 이러한 시도가 지역 사회의 신뢰 회복으로 이어지기를 기대하고 있다.`
+      title: "Day 5 장문 – JPT700점을 향한 공부 루틴",
+      jp: `私は今年、JPTで700点を取ることを目標にしています。最初は単語を暗記するのがつらくて、何度も挫折しそうになりました。しかし、「毎日30分だけは必ず勉強する」という習慣を作ってから、少しずつ継続できるようになりました。平日は通勤時間にリスニング音声を聞き、寝る前にはその日に学んだ表現を復習しています。また、週末には模擬試験を解いて、自分の弱点を記録し、次の週の対策に生かしています。勉強時間やスコ어の変化をアプリに記録していくと、小さな達成が目に見えて分かるので、大きな達成感につながります。結果が出るまでには時間がかかるかもしれませんが、効率だけを求めず、自分に合ったペースで学習を続けていきたいと思っています。`,
+      kr: `저는 올해 JPT에서 700점을 받는 것을 목표로 하고 있습니다. 처음에는 단어를 암기하는 것이 힘들어서 여러 번 포기할 뻔했습니다. 하지만 “하루 30분만은 꼭 공부한다”는 습관을 만들고 나서는 조금씩 꾸준히 계속할 수 있게 되었습니다. 평일에는 출퇴근 시간에 리스닝 음성을 듣고, 자기 전에는 그날 배운 표현을 복습합니다. 또 주말에는 모의시험을 풀어 자신의 약점을 기록하고, 다음 주 대비에 활용합니다. 공부 시간과 점수 변화를 앱에 기록하다 보면 작은 성취가 눈에 보이기 때문에 큰 성취감으로 이어집니다. 결과가 나오기까지는 시간이 걸릴지 모르지만, 효율만을 쫓기보다는 자신에게 맞는 속도로 학습을 계속해 나가고 싶습니다.`
     }
   ];
 
   // -------------------------------
-  // 2. 오늘이 몇 일차인지 계산 (0~4)
+  // 2. 상태 변수
   // -------------------------------
-  function getDayIndex() {
-    const todayKey = new Date().toISOString().slice(0,10);
-    const lastDate = localStorage.getItem("jp_last_date");
-    let idx = parseInt(localStorage.getItem("jp_day_index") || "0", 10);
+  let currentDayIndex = parseInt(localStorage.getItem("jp_day_index") || "0", 10);
+  if (currentDayIndex < 0 || currentDayIndex >= TOTAL_DAYS) currentDayIndex = 0;
 
-    if (lastDate !== todayKey) {
-      idx = (idx + 1) % TOTAL_DAYS;
-      localStorage.setItem("jp_day_index", String(idx));
-      localStorage.setItem("jp_last_date", todayKey);
-    }
-    return idx;
-  }
-
-  const DAY_INDEX = getDayIndex();
-  const todayWords = WEEK_WORDS[DAY_INDEX].slice(0, WORDS_PER_DAY);
+  let todayWords = [];
+  let quizItems = [];
+  let wordIndex = 0;
+  let meaningVisible = false;
+  let quizIndex = 0;
+  let quizScore = 0;
 
   // -------------------------------
-  // 탭 전환
+  // 3. 탭 전환
   // -------------------------------
   const tabs = document.querySelectorAll(".tab");
   tabs.forEach(tab => {
@@ -466,11 +506,28 @@
   });
 
   // -------------------------------
-  // 3. 단어 연습
+  // 4. Day 선택 버튼
   // -------------------------------
-  let wordIndex = 0;
-  let meaningVisible = false;
+  const dayButtons = document.querySelectorAll(".day-btn");
+  function renderDayButtons() {
+    dayButtons.forEach(btn => {
+      const d = parseInt(btn.dataset.day, 10);
+      if (d === currentDayIndex) btn.classList.add("active");
+      else btn.classList.remove("active");
+    });
+  }
+  dayButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const d = parseInt(btn.dataset.day, 10);
+      currentDayIndex = d;
+      localStorage.setItem("jp_day_index", String(currentDayIndex));
+      initDay(); // 새 Day 로드
+    });
+  });
 
+  // -------------------------------
+  // 5. 단어 연습 렌더링
+  // -------------------------------
   const elWordProgress = document.getElementById("word-progress");
   const elWordJp = document.getElementById("word-jp");
   const elWordReading = document.getElementById("word-reading");
@@ -480,7 +537,7 @@
 
   function renderWord() {
     const w = todayWords[wordIndex];
-    elWordProgress.textContent = `오늘의 단어 ${wordIndex + 1} / ${WORDS_PER_DAY} · Day ${DAY_INDEX + 1}`;
+    elWordProgress.textContent = `오늘의 단어 ${wordIndex + 1} / ${WORDS_PER_DAY} · Day ${currentDayIndex + 1}`;
     elWordJp.textContent = w.jp;
     elWordReading.textContent = w.reading;
     elWordSentenceJp.textContent = w.sentenceJp;
@@ -511,7 +568,7 @@
   });
 
   // -------------------------------
-  // 4. 문장 퀴즈 (빈칸 + 4지선다)
+  // 6. 문장 퀴즈
   // -------------------------------
   function shuffle(arr) {
     const a = arr.slice();
@@ -522,30 +579,30 @@
     return a;
   }
 
-  const quizItems = todayWords.map(w => {
-    const blankSentence = w.sentenceJp.includes(w.jp)
-      ? w.sentenceJp.replace(w.jp, "＿＿")
-      : `＿＿：${w.sentenceJp}`;
+  function buildQuizItems() {
+    quizItems = todayWords.map(w => {
+      const blankSentence = w.sentenceJp.includes(w.jp)
+        ? w.sentenceJp.replace(w.jp, "＿＿")
+        : `＿＿：${w.sentenceJp}`;
 
-    let distractors = flatAllWords.filter(x => x.jp !== w.jp);
-    if (distractors.length < 3) {
-      distractors = distractors.concat([{jp:"例示"}, {jp:"仮説"}, {jp:"補足"}]);
-    }
-    const others = shuffle(distractors).slice(0,3).map(x => x.jp);
-    const options = shuffle([w.jp, ...others]);
-    const correctIndex = options.indexOf(w.jp);
+      let distractors = flatAllWords.filter(x => x.jp !== w.jp);
+      if (distractors.length < 3) {
+        distractors = distractors.concat([{jp:"例"}, {jp:"仮説"}, {jp:"補足"}]);
+      }
+      const others = shuffle(distractors).slice(0,3).map(x => x.jp);
+      const options = shuffle([w.jp, ...others]);
+      const correctIndex = options.indexOf(w.jp);
 
-    return {
-      word: w,
-      questionJp: blankSentence,
-      questionKr: w.sentenceKr,
-      options,
-      correctIndex
-    };
-  });
+      return {
+        word: w,
+        questionJp: blankSentence,
+        questionKr: w.sentenceKr,
+        options,
+        correctIndex
+      };
+    });
+  }
 
-  let quizIndex = 0;
-  let quizScore = 0;
   const elQuizProgress = document.getElementById("quiz-progress");
   const elQuizQuestion = document.getElementById("quiz-question");
   const elQuizQuestionKr = document.getElementById("quiz-question-kr");
@@ -592,28 +649,31 @@
   });
 
   // -------------------------------
-  // 5. 오디오 복습 리스트
+  // 7. 오디오 복습
   // -------------------------------
   const elReviewList = document.getElementById("review-list");
   const elReviewBadge = document.getElementById("review-badge");
-  elReviewBadge.textContent = `Day ${DAY_INDEX + 1} · 오늘 분량 ${todayWords.length}개`;
 
-  todayWords.forEach((w, idx) => {
-    const div = document.createElement("div");
-    div.className = "review-card";
-    div.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-        <div>
-          <div style="font-size:1.1rem;">${w.jp}</div>
-          <div style="font-size:0.8rem; color:#a5b4fc;">${w.reading} · ${w.meaning}</div>
+  function buildReviewList() {
+    elReviewList.innerHTML = "";
+    elReviewBadge.textContent = `Day ${currentDayIndex + 1} · 단어 ${todayWords.length}개`;
+    todayWords.forEach((w, idx) => {
+      const div = document.createElement("div");
+      div.className = "review-card";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <div>
+            <div style="font-size:1.1rem;">${w.jp}</div>
+            <div style="font-size:0.8rem; color:#a5b4fc;">${w.reading} · ${w.meaning}</div>
+          </div>
+          <button class="small-btn" data-idx="${idx}">듣기</button>
         </div>
-        <button class="small-btn" data-idx="${idx}">듣기</button>
-      </div>
-      <div class="sentence-jp">${w.sentenceJp}</div>
-      <div class="sentence-kr">${w.sentenceKr}</div>
-    `;
-    elReviewList.appendChild(div);
-  });
+        <div class="sentence-jp">${w.sentenceJp}</div>
+        <div class="sentence-kr">${w.sentenceKr}</div>
+      `;
+      elReviewList.appendChild(div);
+    });
+  }
 
   elReviewList.addEventListener("click", (e) => {
     if (e.target.matches("button.small-btn")) {
@@ -637,19 +697,26 @@
   });
 
   // -------------------------------
-  // 6. 장문 읽기
+  // 8. 장문 읽기
   // -------------------------------
-  const todayPassage = WEEK_PASSAGES[DAY_INDEX] || WEEK_PASSAGES[0];
-  document.getElementById("reading-title").textContent = todayPassage.title;
-  document.getElementById("reading-jp").textContent = todayPassage.jp;
-  document.getElementById("reading-kr").textContent = todayPassage.kr;
+  const elReadingTitle = document.getElementById("reading-title");
+  const elReadingJp = document.getElementById("reading-jp");
+  const elReadingKr = document.getElementById("reading-kr");
+
+  function loadReading() {
+    const passage = WEEK_PASSAGES[currentDayIndex] || WEEK_PASSAGES[0];
+    elReadingTitle.textContent = passage.title;
+    elReadingJp.textContent = passage.jp;
+    elReadingKr.textContent = passage.kr;
+  }
 
   document.getElementById("btn-reading-audio").addEventListener("click", () => {
-    speakJa(todayPassage.jp);
+    const passage = WEEK_PASSAGES[currentDayIndex] || WEEK_PASSAGES[0];
+    speakJa(passage.jp);
   });
 
   // -------------------------------
-  // 7. 일본어 TTS helper
+  // 9. 일본어 TTS helper
   // -------------------------------
   function speakJa(text) {
     if (!("speechSynthesis" in window)) {
@@ -661,9 +728,25 @@
     window.speechSynthesis.speak(utt);
   }
 
-  // 초기 렌더링
-  renderWord();
-  renderQuiz();
+  // -------------------------------
+  // 10. Day 초기화
+  // -------------------------------
+  function initDay() {
+    todayWords = WEEK_WORDS[currentDayIndex];
+    wordIndex = 0;
+    meaningVisible = false;
+    quizIndex = 0;
+    quizScore = 0;
+    buildQuizItems();
+    buildReviewList();
+    loadReading();
+    renderDayButtons();
+    renderWord();
+    renderQuiz();
+  }
+
+  // 초기 실행
+  initDay();
 </script>
 </body>
 </html>
